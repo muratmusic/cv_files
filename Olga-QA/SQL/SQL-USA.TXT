@@ -1,0 +1,111 @@
+create table game (Developer integer, Game_name varchar(20), Release_date Date);
+insert into game values (5, 'Игра какая то', '1999-01-01');
+insert into game values (3, 'Ещё одна игра', '1999-01-01');
+insert into game values (2, 'Простая игра', '1999-01-01');
+insert into game values (4, 'Игра из Америки', '1999-01-01');
+insert into game values (4, 'Ещё игра из Америки', '2020-01-01');
+
+create table company (id integer, country varchar(20));
+insert into company values (11, 'USA');
+insert into company values (33, 'Russia');
+insert into company values (2, 'Russia');
+insert into company values (4, 'USA');
+insert into company values (0, 'Germany');
+
+
+
+select game.Game_name, company.country from game inner join company on game.Developer = company.id where company.country = 'USA' and year(game.Release_date) < 2011
+
+select game.Game_name, company.country from game inner join company where game.Developer = company.id and company.country = 'USA' and year(game.Release_date) < 2011
+
+select game.Game_name, company.country from game inner join company on game.Developer = company.id and company.country = 'USA' and year(game.Release_date) < 2011
+
+Как изменить:
+update game set Game_name = "Игра из США" where Game_name = "Игра из Америки"
+
+Вывести количество всех игр из США:
+select count(*) from game inner join company on game.Developer = company.id and company.country = "USA"
+
+Вывести те компании, которые выпустили не меньше 2 игр:
+select company.* from company join game on company.id = game.Developer group by game.Developer having count(*) >= 2
+
+
+
+
+
+
+
+1) Вывести имена, фамилии и даты рождения всех пользователей, создавших аккаунт в 2017 году
+2) Вывести название всех онлайн-игр, созданных в Америке и вышедших раньше 2011 года
+3) Добавить в базу запись об игре Red Dead Redemption (внести информацию о названии, дате выхода, компании-разработчике)
+4) Добавить этой игре цену в 2000
+5) Удалить эту игру из базы
+6) * Вывести всех пользователей, у которых куплено больше 10 игр
+7) ** Вывести логины пользователей, у которых куплены ТОЛЬКО игры, выпущенные американцами в чётном году
+
+
+Задание №1 *
+Выберите количество записей, которые вы получили в результирующей выборке
+2 (две)
+ 
+Задание №2 *
+Введите сумму id всех игр в результирующей выборке
+546   (Пятьсот сорок шесть)
+
+Задание №4 *
+Введите суммарную стоимость всех игр компании Rockstar, присутствующих в базе(после добавления цены для Red Dead Redemption)
+7000   (Семь тысяч)
+ 
+Задание №5 *
+Введите количество игр компании Rockstar, присутствующих в базе(после удаления Red Dead Redemption)
+1 (одна)
+ 
+Задание №6
+Введите количество записей в результирующей выборке
+13 (тринадцать)
+
+Задание №7
+Введите текст запроса и количество записей в результирующей выборке
+Мой ответ
+
+
+
+
+
+
+
+
+
+
+Преподаватель написал:
+
+Вот так бы решил 6 задание я сам
+ 
+через JOIN+GROUP BY:
+SELECT a.login,count(a.login) as cnt FROM TRANSACTIONs t
+JOIN game g ON t.game_id=g.id join account a on t.account_id=a.id
+group by a.login
+having count(a.login)>10;
+ 
+через подзапрос:
+select a.login from account a where
+(
+select count(t.account_id) from transactions t where t.account_id=a.id
+)>10;
+ 
+
+
+7 задание:    выводили всех пользователей, у которых есть хотя бы одна игра, подходящая под условие задачи
+ 
+Вот так бы решил 7 задание я сам
+ 
+select distinct(a.login) from account a
+join transactions t  on a.id=t.account_id
+where a.id not in
+(
+    select t1.account_id from transactions t1
+    join game g1 on t1.game_id=g1.id
+    join company c1 on g1.Developer=c1.id
+    where
+    MOD(year(g1.Release_date),2)=1 or c1.country!='USA'
+);
